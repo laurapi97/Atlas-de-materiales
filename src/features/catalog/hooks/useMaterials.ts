@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import type { Material, MaterialsFilter } from '@/types'
-import { fetchMaterials } from '../services/materials.service'
+import type { Material } from '@/types'
+import { fetchMaterials } from '@/services/materials'
 
 interface UseMaterialsResult {
   materials: Material[]
@@ -8,32 +8,19 @@ interface UseMaterialsResult {
   error: string | null
 }
 
-export function useMaterials(filters?: MaterialsFilter): UseMaterialsResult {
+export function useMaterials(): UseMaterialsResult {
   const [materials, setMaterials] = useState<Material[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
-
-    async function load() {
-      setIsLoading(true)
-      setError(null)
-      try {
-        const data = await fetchMaterials(filters)
-        if (!cancelled) setMaterials(data)
-      } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Error desconocido')
-      } finally {
-        if (!cancelled) setIsLoading(false)
-      }
-    }
-
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [filters])
+    fetchMaterials()
+      .then((data) => { if (!cancelled) setMaterials(data) })
+      .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : 'Error') })
+      .finally(() => { if (!cancelled) setIsLoading(false) })
+    return () => { cancelled = true }
+  }, [])
 
   return { materials, isLoading, error }
 }

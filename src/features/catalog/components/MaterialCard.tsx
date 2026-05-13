@@ -2,28 +2,47 @@ import type { Material } from '@/types'
 
 interface MaterialCardProps {
   material: Material
-  onClick?: (material: Material) => void
+  index: number
+  inCompare: boolean
+  onOpen: (id: string) => void
+  onToggleCompare: (id: string) => void
 }
 
-export function MaterialCard({ material, onClick }: MaterialCardProps) {
+export function MaterialCard({ material: m, index, inCompare, onOpen, onToggleCompare }: MaterialCardProps) {
   return (
-    <article
-      className="cursor-pointer overflow-hidden rounded-lg border border-neutral-200 transition-colors hover:border-neutral-400"
-      onClick={() => onClick?.(material)}
+    <button
+      className="card"
+      onClick={() => onOpen(m.id)}
+      style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
     >
-      <div className="aspect-square bg-neutral-100">
-        {material.thumbnailUrl && (
-          <img
-            src={material.thumbnailUrl}
-            alt={material.name}
-            className="h-full w-full object-cover"
-          />
-        )}
+      <div
+        className="swatch"
+        style={{
+          background: m.swatch.css,
+          backgroundColor: m.swatch.base,
+          backgroundBlendMode: m.swatch.blend as React.CSSProperties['backgroundBlendMode'] || 'normal',
+        }}
+      >
+        <span className="num">№ {String(index + 1).padStart(3, '0')}</span>
+        <div className="actions">
+          <button
+            type="button"
+            className={inCompare ? 'on' : ''}
+            title="Añadir a comparación"
+            onClick={(e) => { e.stopPropagation(); onToggleCompare(m.id) }}
+          >
+            {inCompare ? '✓' : '+'}
+          </button>
+        </div>
       </div>
-      <div className="p-3">
-        <h3 className="text-sm font-medium text-neutral-900">{material.name}</h3>
-        <p className="mt-1 text-xs text-neutral-500">{material.category}</p>
+      <div className="info">
+        <div className="name">{m.name}</div>
+        <div className="cat">{m.category}</div>
       </div>
-    </article>
+      <div className="desc">{m.short}</div>
+      <div className="tagrow">
+        {m.emotions.slice(0, 3).map((e) => <span key={e}>{e}</span>)}
+      </div>
+    </button>
   )
 }

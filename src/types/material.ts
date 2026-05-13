@@ -1,35 +1,45 @@
-export type MaterialCategory =
-  | 'madera'
-  | 'metal'
-  | 'piedra'
-  | 'tela'
-  | 'vidrio'
-  | 'ceramica'
-  | 'plastico'
-  | 'otro'
+export interface MaterialSwatch {
+  base: string
+  css: string
+  blend: string
+}
 
-export type MaterialFinish = 'mate' | 'brillante' | 'satinado' | 'texturizado'
+export interface MaterialPhysical {
+  density: string
+  hardness: string
+  absorption: string
+}
+
+export type MaterialThermal = 'cálido' | 'frío' | 'neutro'
+export type MaterialDurability = 'baja' | 'media' | 'alta'
 
 export interface Material {
   id: string
   name: string
-  slug: string
+  category: string
+  year: string
+  origin: string
+  short: string
   description: string
-  category: MaterialCategory
-  finish: MaterialFinish
-  colors: string[]
-  imageUrl: string
-  thumbnailUrl: string
-  tags: string[]
-  supplier?: string
-  createdAt: string
-  updatedAt: string
+  physical: MaterialPhysical
+  tactile: string[]
+  thermal: MaterialThermal
+  spatial: string[]
+  durability: MaterialDurability
+  emotions: string[]
+  keywords: string[]
+  related: string[]
+  swatch: MaterialSwatch
+  imageUrl?: string
+  thumbnailUrl?: string
 }
 
-export interface MaterialsFilter {
-  category?: MaterialCategory
-  finish?: MaterialFinish
-  colors?: string[]
-  tags?: string[]
-  search?: string
+export interface MaterialFilters {
+  search: string
+  category: string | null
+  tactile: Set<string>
+  thermal: string | null
+  spatial: Set<string>
+  durability: string | null
+  emotions: Set<string>
 }

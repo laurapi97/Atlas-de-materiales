@@ -1,16 +1,17 @@
-import type { Material, MaterialsFilter } from '@/types'
+import type { Material } from '@/types'
+import { MATERIALS } from '@/data/materials'
 // import { supabase } from './supabase'
 
-export async function fetchMaterials(_filters?: MaterialsFilter): Promise<Material[]> {
+export async function fetchMaterials(): Promise<Material[]> {
   // const { data, error } = await supabase.from('materials').select('*')
   // if (error) throw error
   // return data
-  return []
+  return MATERIALS
 }
 
-export async function fetchMaterialBySlug(_slug: string): Promise<Material | null> {
-  // const { data, error } = await supabase.from('materials').select('*').eq('slug', _slug).single()
+export async function fetchMaterialById(id: string): Promise<Material | null> {
+  // const { data, error } = await supabase.from('materials').select('*').eq('id', id).single()
   // if (error) throw error
   // return data
-  return null
+  return MATERIALS.find((m) => m.id === id) ?? null
 }
