@@ -1,1 +1,1 @@
-export { fetchMaterials, fetchMaterialBySlug } from '@/services/materials'
+export { fetchMaterials, fetchMaterialById } from '@/services/materials'
