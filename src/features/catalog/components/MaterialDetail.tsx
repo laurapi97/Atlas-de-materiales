@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Material } from '@/types'
 import { DuraBar } from './DuraBar'
+import { supabase } from '@/services/supabase'
 
 interface MaterialDetailProps {
   material: Material
@@ -11,10 +12,55 @@ interface MaterialDetailProps {
   onToggleCompare: (id: string) => void
 }
 
+function AiDescription({ m }: Readonly<{ m: Material }>) {
+  const cacheKey = `ai_desc_${m.id}`
+  const [text, setText] = useState<string | null>(() => localStorage.getItem(cacheKey))
+  const [loading, setLoading] = useState(() => localStorage.getItem(cacheKey) === null)
+
+  useEffect(() => {
+    if (text !== null) return
+    supabase.functions
+      .invoke('generate-material-description', {
+        body: {
+          name: m.name, category: m.category, origin: m.origin,
+          tactile: m.tactile, thermal: m.thermal, emotions: m.emotions,
+          durability: m.durability, spatial: m.spatial, keywords: m.keywords,
+          composicionPrincipal: m.composicionPrincipal,
+          texturaVisual: m.texturaVisual,
+          comportamientoLuz: m.comportamientoLuz,
+        },
+      })
+      .then(({ data, error }) => {
+        if (!error && data?.description) {
+          localStorage.setItem(cacheKey, data.description)
+          setText(data.description)
+        }
+      })
+      .finally(() => setLoading(false))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (!loading && !text) return null
+
+  return (
+    <div className="ai-narrative">
+      <span className="ai-label">Descripción</span>
+      {loading ? (
+        <div className="ai-skel">
+          <span style={{ width: '92%' }} /><span style={{ width: '78%' }} /><span style={{ width: '85%' }} />
+        </div>
+      ) : (
+        <p>{text}</p>
+      )}
+    </div>
+  )
+}
+
 export function MaterialDetail({
   material: m, materials, compareSet, onClose, onOpen, onToggleCompare,
 }: Readonly<MaterialDetailProps>) {
   const [imgErr, setImgErr] = useState(false)
+
   const idx = materials.findIndex((x) => x.id === m.id) + 1
   const inCompare = compareSet.has(m.id)
   const related = m.related
@@ -100,6 +146,7 @@ export function MaterialDetail({
 
         <div className="detail-body">
           {m.description && <p className="narrative">{m.description}</p>}
+          <AiDescription key={m.id} m={m} />
 
           {/* Section 01 — always rendered because durability is always present */}
           <div className="detail-section-h">
