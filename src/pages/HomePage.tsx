@@ -7,10 +7,10 @@ export function HomePage() {
       className="flex min-h-[calc(100vh-65px)] flex-col items-center justify-start px-6 pt-24 pb-32"
       style={{ background: 'var(--paper)' }}
     >
-      {/* ── Editorial heading ── */}
+      {/* ── Logo ── */}
       <header className="mb-14 flex flex-col items-center gap-3 text-center">
-        <span className="home-eyebrow">Investigación Arquitectónica</span>
-        <h1 className="home-title">Atlas de Materiales</h1>
+        <img src="/MORPHE.png" alt="Morphé Studio" style={{ width: 320, maxWidth: '80vw', height: 'auto', marginBottom: 4 }} />
+        <p style={{ fontFamily: 'var(--serif)', fontSize: 22, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink)', margin: 0 }}>Morphé Studio</p>
         <span className="home-edition">Vol. I · Ed. 2026</span>
       </header>
 

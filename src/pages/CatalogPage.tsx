@@ -5,7 +5,6 @@ import { SensoryMap } from '@/features/catalog/components/SensoryMap'
 import { MaterialCompare } from '@/features/catalog/components/MaterialCompare'
 import { FilterSidebar } from '@/features/filters'
 import { Footer } from '@/components/Footer'
-import { APP_NAME } from '@/lib/constants'
 
 export function CatalogPage() {
   const {
@@ -24,7 +23,8 @@ export function CatalogPage() {
       {/* ── Topbar ── */}
       <header className="topbar">
         <div className="left">
-          <div className="wordmark">{APP_NAME}</div>
+          <img src="/MORPHE2.png" alt="Morphé Studio" style={{ height: 48, width: 'auto', objectFit: 'contain' }} />
+          <div className="wordmark">Morphé Studio</div>
           <div className="wordmark-sub">Vol.&nbsp;I · {materials.length} entradas · ed. 2026</div>
         </div>
 

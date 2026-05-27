@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Material, MaterialFilters } from '@/types'
 import { applyFilters, materialPosition } from '../utils/filters'
 
@@ -8,10 +9,43 @@ interface SensoryMapProps {
   onOpen: (id: string) => void
 }
 
-export function SensoryMap({ materials, filters, compareSet, onOpen }: SensoryMapProps) {
+function MapDot({ m, dim, cmp, onOpen }: Readonly<{ m: Material; dim: boolean; cmp: boolean; onOpen: () => void }>) {
+  const [imgErr, setImgErr] = useState(false)
+  const showImg = !!m.coverImage && !imgErr
+  const p = materialPosition(m)
+
+  return (
+    <button
+      type="button"
+      className={'map-dot' + (dim ? ' dim' : '') + (cmp ? ' compare-on' : '')}
+      style={{
+        padding: 0,
+        left: `${p.x * 100}%`,
+        top: `${p.y * 100}%`,
+        background: m.swatch.css,
+        backgroundColor: m.swatch.base,
+        backgroundBlendMode: m.swatch.blend || 'normal',
+      }}
+      onClick={onOpen}
+      aria-label={m.name}
+    >
+      {showImg && (
+        <img
+          src={m.coverImage}
+          alt={m.name}
+          loading="lazy"
+          onError={() => setImgErr(true)}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      )}
+      <span className="lbl">{m.name}</span>
+    </button>
+  )
+}
+
+export function SensoryMap({ materials, filters, compareSet, onOpen }: Readonly<SensoryMapProps>) {
   const filtered = applyFilters(materials, filters)
   const filteredIds = new Set(filtered.map((m) => m.id))
-
   return (
     <div className="main">
       <div className="section-head">
@@ -37,27 +71,15 @@ export function SensoryMap({ materials, filters, compareSet, onOpen }: SensoryMa
         <div className="map-axis y-t">↑ cálido</div>
         <div className="map-axis y-b">↓ frío</div>
 
-        {materials.map((m) => {
-          const p = materialPosition(m)
-          const dim = !filteredIds.has(m.id)
-          const cmp = compareSet.has(m.id)
-          return (
-            <div
-              key={m.id}
-              className={'map-dot' + (dim ? ' dim' : '') + (cmp ? ' compare-on' : '')}
-              style={{
-                left: `${p.x * 100}%`,
-                top: `${p.y * 100}%`,
-                background: m.swatch.css,
-                backgroundColor: m.swatch.base,
-                backgroundBlendMode: m.swatch.blend as React.CSSProperties['backgroundBlendMode'] || 'normal',
-              }}
-              onClick={() => onOpen(m.id)}
-            >
-              <span className="lbl">{m.name}</span>
-            </div>
-          )
-        })}
+        {materials.map((m) => (
+          <MapDot
+            key={m.id}
+            m={m}
+            dim={!filteredIds.has(m.id)}
+            cmp={compareSet.has(m.id)}
+            onOpen={() => onOpen(m.id)}
+          />
+        ))}
 
         <div className="map-legend">
           <h5>Lectura</h5>
@@ -66,6 +88,7 @@ export function SensoryMap({ materials, filters, compareSet, onOpen }: SensoryMa
           <div style={{ color: 'var(--muted)' }}>click sobre un punto para abrir</div>
         </div>
       </div>
+
     </div>
   )
 }
