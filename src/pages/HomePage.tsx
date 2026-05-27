@@ -1,7 +1,21 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PATHS } from '@/routes/paths'
+import { useMaterials } from '@/features/catalog'
 
 export function HomePage() {
+  const { materials } = useMaterials()
+  const [imgErr, setImgErr] = useState(false)
+
+  const hero = useMemo(() => {
+    const withImage = materials.filter((m) => m.coverImage || m.imageUrl)
+    if (withImage.length === 0) return null
+    return withImage[Math.floor(Math.random() * withImage.length)]
+  }, [materials])
+
+  const heroImg = hero?.coverImage ?? hero?.imageUrl
+  const showImg = !!heroImg && !imgErr
+
   return (
     <div
       className="flex min-h-[calc(100vh-65px)] flex-col items-center justify-start px-6 pt-24 pb-32"
@@ -19,13 +33,22 @@ export function HomePage() {
 
       {/* ── Hero image ── */}
       <div className="home-hero" style={{ marginBottom: '52px' }}>
-        <div className="home-hero-inner" />
+        <div className="home-hero-inner">
+          {showImg && (
+            <img
+              src={heroImg}
+              alt={hero?.name ?? ''}
+              onError={() => setImgErr(true)}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          )}
+        </div>
         <div className="home-hero-label">
-          <span>Travertino Romano</span>
+          <span>{hero?.name ?? 'Travertino Romano'}</span>
           <span>·</span>
-          <span>Piedra Natural</span>
+          <span>{hero?.category ?? 'Piedra Natural'}</span>
           <span>·</span>
-          <span>Ref. 001</span>
+          <span>Ref. {hero ? String(materials.indexOf(hero) + 1).padStart(3, '0') : '001'}</span>
         </div>
       </div>
 
