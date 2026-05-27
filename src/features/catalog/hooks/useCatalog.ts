@@ -5,6 +5,10 @@ import { useMaterials } from './useMaterials'
 
 export type CatalogView = 'catalog' | 'map' | 'compare'
 
+type SetFilterKey = 'atmosfera' | 'certificaciones'
+type SingleFilterKey = 'familia'
+type ScoreFilterKey = 'minHumedad' | 'minDurabilidad' | 'minMantenimiento' | 'minCalidez' | 'minExpresividad' | 'minAcustica' | 'minSostenibilidad'
+
 export function useCatalog() {
   const { materials, isLoading, error } = useMaterials()
 
@@ -19,10 +23,7 @@ export function useCatalog() {
     setFilters((prev) => ({ ...prev, ...patch }))
   }, [])
 
-  const toggleSet = useCallback(<K extends 'tactile' | 'spatial' | 'emotions'>(
-    key: K,
-    value: string,
-  ) => {
+  const toggleSet = useCallback(<K extends SetFilterKey>(key: K, value: string) => {
     setFilters((prev) => {
       const nx = new Set(prev[key])
       nx.has(value) ? nx.delete(value) : nx.add(value)
@@ -30,11 +31,12 @@ export function useCatalog() {
     })
   }, [])
 
-  const toggleSingle = useCallback(<K extends 'category' | 'thermal' | 'durability'>(
-    key: K,
-    value: string,
-  ) => {
+  const toggleSingle = useCallback(<K extends SingleFilterKey>(key: K, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: prev[key] === value ? null : value }))
+  }, [])
+
+  const updateScore = useCallback((key: ScoreFilterKey, value: number) => {
+    setFilters((prev) => ({ ...prev, [key]: value }))
   }, [])
 
   const resetFilters = useCallback(() => setFilters(createDefaultFilters()), [])
@@ -70,6 +72,7 @@ export function useCatalog() {
     updateFilters,
     toggleSet,
     toggleSingle,
+    updateScore,
     resetFilters,
     filterPills,
     filterActive: isFilterActive(filters),

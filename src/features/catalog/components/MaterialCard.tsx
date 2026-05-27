@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Material } from '@/types'
 
 interface MaterialCardProps {
@@ -9,6 +10,9 @@ interface MaterialCardProps {
 }
 
 export function MaterialCard({ material: m, index, inCompare, onOpen, onToggleCompare }: MaterialCardProps) {
+  const [imgError, setImgError] = useState(false)
+  const showImage = !!m.coverImage && !imgError
+
   return (
     <button
       className="card"
@@ -23,6 +27,19 @@ export function MaterialCard({ material: m, index, inCompare, onOpen, onToggleCo
           backgroundBlendMode: m.swatch.blend as React.CSSProperties['backgroundBlendMode'] || 'normal',
         }}
       >
+        {showImage && (
+          <img
+            src={m.coverImage}
+            alt={m.name}
+            loading="lazy"
+            onError={() => setImgError(true)}
+            style={{
+              position: 'absolute', inset: 0,
+              width: '100%', height: '100%',
+              objectFit: 'cover', display: 'block',
+            }}
+          />
+        )}
         <span className="num">№ {String(index + 1).padStart(3, '0')}</span>
         <div className="actions">
           <button

@@ -11,7 +11,7 @@ export function CatalogPage() {
   const {
     materials, filtered, isLoading, error,
     view, setView,
-    filters, updateFilters, toggleSet, toggleSingle, resetFilters,
+    filters, updateFilters, toggleSet, toggleSingle, updateScore, resetFilters,
     filterPills, filterActive,
     openMaterial, openMaterialById, closeMaterial,
     compare, compareSet, toggleCompare,
@@ -36,7 +36,7 @@ export function CatalogPage() {
             type="button"
             className={view === 'map' ? 'active' : ''}
             onClick={() => setView('map')}
-            style={view !== 'map' ? { backgroundColor: 'rgb(199,170,141)', color: 'rgb(86,57,57)' } : undefined}
+            style={view === 'map' ? undefined : { backgroundColor: 'rgb(199,170,141)', color: 'rgb(86,57,57)' }}
           >
             Mapa sensorial
           </button>
@@ -60,12 +60,14 @@ export function CatalogPage() {
       <div className={'body' + (showSidebar ? '' : ' full')}>
         {showSidebar && (
           <FilterSidebar
+            materials={materials}
             filters={filters}
             total={materials.length}
             shown={filtered.length}
             onUpdate={updateFilters}
             onToggleSet={toggleSet}
             onToggleSingle={toggleSingle}
+            onUpdateScore={updateScore}
             onReset={resetFilters}
             filterActive={filterActive}
           />

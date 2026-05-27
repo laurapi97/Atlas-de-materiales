@@ -46,8 +46,19 @@ export function MaterialDetail({
               background: m.swatch.css,
               backgroundColor: m.swatch.base,
               backgroundBlendMode: m.swatch.blend as React.CSSProperties['backgroundBlendMode'] || 'normal',
+              overflow: 'hidden',
+              position: 'relative',
             }}
-          />
+          >
+            {m.coverImage && (
+              <img
+                src={m.coverImage}
+                alt={m.name}
+                loading="lazy"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            )}
+          </div>
           <div className="info">
             <div>
               <div className="num">№ {String(idx).padStart(3, '0')} · {m.category}</div>
