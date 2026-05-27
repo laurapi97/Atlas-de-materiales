@@ -1,18 +1,70 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PATHS } from '@/routes/paths'
-import { APP_NAME } from '@/lib/constants'
-import { Button } from '@/components/ui'
+import { useMaterials } from '@/features/catalog'
 
 export function HomePage() {
+  const { materials } = useMaterials()
+  const [imgErr, setImgErr] = useState(false)
+
+  const hero = useMemo(() => {
+    const withImage = materials.filter((m) => m.coverImage || m.imageUrl)
+    if (withImage.length === 0) return null
+    return withImage[Math.floor(Math.random() * withImage.length)]
+  }, [materials])
+
+  const heroImg = hero?.coverImage ?? hero?.imageUrl
+  const showImg = !!heroImg && !imgErr
+
   return (
-    <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 py-24 text-center sm:px-6">
-      <h1 className="text-4xl font-semibold text-neutral-900">{APP_NAME}</h1>
-      <p className="max-w-md text-neutral-500">
-        Explora y descubre materiales para tus proyectos de diseño interior.
+    <div
+      className="flex min-h-[calc(100vh-65px)] flex-col items-center justify-start px-6 pt-24 pb-32"
+      style={{ background: 'var(--paper)' }}
+    >
+      {/* ── Logo ── */}
+      <header className="mb-14 flex flex-col items-center gap-3 text-center">
+        <img src="/MORPHE.png" alt="Morphé Studio" style={{ width: 320, maxWidth: '80vw', height: 'auto', marginBottom: 4 }} />
+        <p style={{ fontFamily: 'var(--serif)', fontSize: 22, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink)', margin: 0 }}>Morphé Studio</p>
+        <span className="home-edition">Vol. I · Ed. 2026</span>
+      </header>
+
+      {/* ── Vertical rule ── */}
+      <div style={{ width: '1px', height: '40px', background: 'var(--rule)', marginBottom: '52px' }} />
+
+      {/* ── Hero image ── */}
+      <div className="home-hero" style={{ marginBottom: '52px' }}>
+        <div className="home-hero-inner">
+          {showImg && (
+            <img
+              src={heroImg}
+              alt={hero?.name ?? ''}
+              onError={() => setImgErr(true)}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          )}
+        </div>
+        <div className="home-hero-label">
+          <span>{hero?.name ?? 'Travertino Romano'}</span>
+          <span>·</span>
+          <span>{hero?.category ?? 'Piedra Natural'}</span>
+          <span>·</span>
+          <span>Ref. {hero ? String(materials.indexOf(hero) + 1).padStart(3, '0') : '001'}</span>
+        </div>
+      </div>
+
+      {/* ── Description ── */}
+      <p className="home-body" style={{ marginBottom: '48px' }}>
+        Una colección de materiales para la arquitectura contemporánea.{' '}
+        Texturas, propiedades y emociones, reunidas en un archivo editorial de referencia.
       </p>
-      <Link to={PATHS.CATALOG}>
-        <Button size="lg">Ver catálogo</Button>
+
+      {/* ── CTA ── */}
+      <Link to={PATHS.CATALOG} className="home-cta">
+        Entrar al Catálogo
       </Link>
+
+      {/* ── Bottom mark ── */}
+      <div style={{ marginTop: '80px', width: '1px', height: '52px', background: 'var(--rule)' }} />
     </div>
   )
 }
