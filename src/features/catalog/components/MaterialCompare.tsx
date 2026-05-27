@@ -165,7 +165,7 @@ export function MaterialCompare({ materials, compare, onToggleCompare, onOpen }:
         </div>
       </div>
 
-      <div className="compare-wrap" style={{ '--cols': cols } as React.CSSProperties}>
+      <div className="compare-wrap" data-count={items.length} style={{ '--cols': cols } as React.CSSProperties}>
         {visibleRows.map((r) => (
           <div className="row" key={r.k}>
             <div className="cell h">{r.h}</div>
