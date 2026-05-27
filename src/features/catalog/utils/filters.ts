@@ -5,7 +5,6 @@ export function createDefaultFilters(): MaterialFilters {
     search: '',
     familia: null,
     atmosfera: new Set(),
-    certificaciones: new Set(),
     minHumedad: 0,
     minDurabilidad: 0,
     minMantenimiento: 0,
@@ -49,7 +48,6 @@ export function applyFilters(materials: Material[], f: MaterialFilters): Materia
   return materials.filter((m) => {
     if (f.familia && m.category.toLowerCase() !== f.familia.toLowerCase()) return false
     if (f.atmosfera.size > 0 && !matchesSet(m.emotions, f.atmosfera)) return false
-    if (f.certificaciones.size > 0 && !matchesSet(m.certificaciones ?? [], f.certificaciones)) return false
     if (!passesScores(m, f)) return false
     if (!matchesSearch(m, q)) return false
     return true
@@ -59,7 +57,7 @@ export function applyFilters(materials: Material[], f: MaterialFilters): Materia
 export function isFilterActive(f: MaterialFilters): boolean {
   return !!(
     f.search || f.familia ||
-    f.atmosfera.size || f.certificaciones.size ||
+    f.atmosfera.size ||
     f.minHumedad || f.minDurabilidad || f.minMantenimiento ||
     f.minCalidez || f.minExpresividad || f.minAcustica || f.minSostenibilidad
   )
@@ -94,10 +92,6 @@ export function buildFilterPills(
   for (const a of f.atmosfera) {
     out.push({ k: `atm-${a}`, lbl: a, clear: () => { const nx = new Set(f.atmosfera); nx.delete(a); update({ atmosfera: nx }) } })
   }
-  for (const c of f.certificaciones) {
-    out.push({ k: `cert-${c}`, lbl: c, clear: () => { const nx = new Set(f.certificaciones); nx.delete(c); update({ certificaciones: nx }) } })
-  }
-
   for (const key of Object.keys(SCORE_LABELS) as ScoreKey[]) {
     const val = f[key]
     if (val > 0) {

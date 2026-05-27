@@ -5,7 +5,7 @@ import { useMaterials } from './useMaterials'
 
 export type CatalogView = 'catalog' | 'map' | 'compare'
 
-type SetFilterKey = 'atmosfera' | 'certificaciones'
+type SetFilterKey = 'atmosfera'
 type SingleFilterKey = 'familia'
 type ScoreFilterKey = 'minHumedad' | 'minDurabilidad' | 'minMantenimiento' | 'minCalidez' | 'minExpresividad' | 'minAcustica' | 'minSostenibilidad'
 

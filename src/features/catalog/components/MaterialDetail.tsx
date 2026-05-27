@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { Material } from '@/types'
 import { DuraBar } from './DuraBar'
 
@@ -13,7 +13,8 @@ interface MaterialDetailProps {
 
 export function MaterialDetail({
   material: m, materials, compareSet, onClose, onOpen, onToggleCompare,
-}: MaterialDetailProps) {
+}: Readonly<MaterialDetailProps>) {
+  const [imgErr, setImgErr] = useState(false)
   const idx = materials.findIndex((x) => x.id === m.id) + 1
   const inCompare = compareSet.has(m.id)
   const related = m.related
@@ -29,6 +30,19 @@ export function MaterialDetail({
       document.body.style.overflow = ''
     }
   }, [onClose])
+
+  // Only include physical cells that have real data
+  const tactileItems = [...new Set([...(m.texturaTactil ?? []), ...m.tactile])]
+  const compatibles = m.materialesCompatibles ?? []
+  const certs = m.certificaciones ?? []
+
+  const physicalCells = [
+    m.physical.density === '—' ? null : { k: 'Densidad', v: m.physical.density },
+    m.physical.hardness === '—' ? null : { k: 'Dureza', v: m.physical.hardness },
+    m.physical.absorption === '—' ? null : { k: 'Absorción', v: m.physical.absorption },
+  ].filter((c): c is { k: string; v: string } => c !== null)
+
+  const showImg = !!m.coverImage && !imgErr
 
   return (
     <>
@@ -50,11 +64,12 @@ export function MaterialDetail({
               position: 'relative',
             }}
           >
-            {m.coverImage && (
+            {showImg && (
               <img
                 src={m.coverImage}
                 alt={m.name}
                 loading="lazy"
+                onError={() => setImgErr(true)}
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               />
             )}
@@ -64,11 +79,13 @@ export function MaterialDetail({
               <div className="num">№ {String(idx).padStart(3, '0')} · {m.category}</div>
               <h2>{m.name}</h2>
             </div>
-            <p className="lead">{m.short}</p>
-            <div className="origin">
-              <span><b>Origen</b><br />{m.origin}</span>
-              <span><b>Referencia</b><br />{m.year}</span>
-            </div>
+            {m.short && <p className="lead">{m.short}</p>}
+            {(m.origin || m.year) && (
+              <div className="origin">
+                {m.origin && <span><b>Origen</b><br />{m.origin}</span>}
+                {m.year && <span><b>Referencia</b><br />{m.year}</span>}
+              </div>
+            )}
             <div className="ctaRow">
               <button
                 type="button"
@@ -82,16 +99,20 @@ export function MaterialDetail({
         </div>
 
         <div className="detail-body">
-          <p className="narrative">{m.description}</p>
+          {m.description && <p className="narrative">{m.description}</p>}
 
+          {/* Section 01 — always rendered because durability is always present */}
           <div className="detail-section-h">
             <span><span className="ix">01</span>&nbsp;&nbsp;Ficha técnica</span>
             <span>propiedades</span>
           </div>
           <div className="spec-grid">
-            <div className="cell"><div className="k">Densidad</div><div className="v">{m.physical.density}</div></div>
-            <div className="cell"><div className="k">Dureza</div><div className="v">{m.physical.hardness}</div></div>
-            <div className="cell"><div className="k">Absorción</div><div className="v">{m.physical.absorption}</div></div>
+            {physicalCells.map(({ k, v }) => (
+              <div key={k} className="cell">
+                <div className="k">{k}</div>
+                <div className="v">{v}</div>
+              </div>
+            ))}
             <div className="cell">
               <div className="k">Durabilidad</div>
               <div className="v" style={{ textTransform: 'capitalize' }}>{m.durability}</div>
@@ -99,45 +120,88 @@ export function MaterialDetail({
             </div>
           </div>
 
+          {/* Section 02 — always rendered because thermal is always present */}
           <div className="detail-section-h">
             <span><span className="ix">02</span>&nbsp;&nbsp;Lectura sensorial</span>
             <span>tacto · térmica · emoción</span>
           </div>
           <div className="spec-grid">
-            <div className="cell">
-              <div className="k">Tacto</div>
-              <div className="vsmall">{m.tactile.map((t) => <span key={t} className="t">{t}</span>)}</div>
-            </div>
+            {tactileItems.length > 0 && (
+              <div className="cell">
+                <div className="k">Tacto</div>
+                <div className="vsmall">{tactileItems.map((t) => <span key={t} className="t">{t}</span>)}</div>
+              </div>
+            )}
             <div className="cell">
               <div className="k">Térmica</div>
               <div className="v" style={{ textTransform: 'capitalize' }}>{m.thermal}</div>
             </div>
-            <div className="cell">
-              <div className="k">Emociones</div>
-              <div className="vsmall">{m.emotions.map((e) => <span key={e} className="t">{e}</span>)}</div>
-            </div>
-            <div className="cell">
-              <div className="k">Uso espacial</div>
-              <div className="vsmall">{m.spatial.map((s) => <span key={s} className="t">{s}</span>)}</div>
-            </div>
+            {m.texturaVisual && (
+              <div className="cell">
+                <div className="k">Textura visual</div>
+                <div className="v" style={{ fontSize: 13 }}>{m.texturaVisual}</div>
+              </div>
+            )}
+            {m.emotions.length > 0 && (
+              <div className="cell">
+                <div className="k">Emociones</div>
+                <div className="vsmall">{m.emotions.map((e) => <span key={e} className="t">{e}</span>)}</div>
+              </div>
+            )}
+            {m.spatial.length > 0 && (
+              <div className="cell">
+                <div className="k">Uso espacial</div>
+                <div className="vsmall">{m.spatial.map((s) => <span key={s} className="t">{s}</span>)}</div>
+              </div>
+            )}
           </div>
 
-          <div className="detail-section-h">
-            <span><span className="ix">03</span>&nbsp;&nbsp;Vocabulario</span>
-            <span>palabras clave</span>
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {m.keywords.map((k) => (
-              <span key={k} style={{ fontFamily: 'var(--mono)', fontSize: 11, padding: '5px 10px', border: '1px solid var(--rule)', borderRadius: 999 }}>
-                #{k}
-              </span>
-            ))}
-          </div>
+          {/* Section 03 — certificaciones y materiales compatibles */}
+          {(certs.length > 0 || compatibles.length > 0) && (
+            <>
+              <div className="detail-section-h">
+                <span><span className="ix">03</span>&nbsp;&nbsp;Compatibilidad</span>
+                <span>certificaciones · materiales</span>
+              </div>
+              <div className="spec-grid">
+                {certs.length > 0 && (
+                  <div className="cell">
+                    <div className="k">Certificaciones</div>
+                    <div className="vsmall">{certs.map((c) => <span key={c} className="t">{c}</span>)}</div>
+                  </div>
+                )}
+                {compatibles.length > 0 && (
+                  <div className="cell">
+                    <div className="k">Materiales compatibles</div>
+                    <div className="vsmall">{compatibles.map((c) => <span key={c} className="t">{c}</span>)}</div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
 
+          {/* Section 04 — only if keywords exist */}
+          {m.keywords.length > 0 && (
+            <>
+              <div className="detail-section-h">
+                <span><span className="ix">04</span>&nbsp;&nbsp;Vocabulario</span>
+                <span>palabras clave</span>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {m.keywords.map((k) => (
+                  <span key={k} style={{ fontFamily: 'var(--mono)', fontSize: 11, padding: '5px 10px', border: '1px solid var(--rule)', borderRadius: 999 }}>
+                    #{k}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Section 05 — only if related materials exist */}
           {related.length > 0 && (
             <>
               <div className="detail-section-h">
-                <span><span className="ix">04</span>&nbsp;&nbsp;Materiales afines</span>
+                <span><span className="ix">05</span>&nbsp;&nbsp;Materiales afines</span>
                 <span>relación visual</span>
               </div>
               <div className="related">

@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Chip } from '@/components/ui/Chip'
 import type { Material, MaterialFilters } from '@/types'
 
-type SetFilterKey = 'atmosfera' | 'certificaciones'
+type SetFilterKey = 'atmosfera'
 type SingleFilterKey = 'familia'
 type ScoreFilterKey = 'minHumedad' | 'minDurabilidad' | 'minMantenimiento' | 'minCalidez' | 'minExpresividad' | 'minAcustica' | 'minSostenibilidad'
 
@@ -62,7 +62,6 @@ export function FilterSidebar({
     [materials],
   )
   const availableAtmosfera = useMemo(() => derive(materials, (m) => m.emotions), [materials])
-  const availableCerts = useMemo(() => derive(materials, (m) => m.certificaciones ?? []), [materials])
 
   const scoreActive = [
     filters.minHumedad, filters.minDurabilidad, filters.minMantenimiento,
@@ -126,23 +125,6 @@ export function FilterSidebar({
             {availableAtmosfera.map((a) => (
               <Chip key={a} on={filters.atmosfera.has(a)} onClick={() => onToggleSet('atmosfera', a)}>
                 {a}
-              </Chip>
-            ))}
-          </div>
-        </details>
-      )}
-
-      {/* Certificaciones */}
-      {availableCerts.length > 0 && (
-        <details>
-          <summary className="filter-summary">
-            Certificaciones
-            {filters.certificaciones.size > 0 && <span className="filter-badge">{filters.certificaciones.size}</span>}
-          </summary>
-          <div className="chiprow">
-            {availableCerts.map((c) => (
-              <Chip key={c} on={filters.certificaciones.has(c)} onClick={() => onToggleSet('certificaciones', c)}>
-                {c}
               </Chip>
             ))}
           </div>
