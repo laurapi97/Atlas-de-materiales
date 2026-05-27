@@ -81,6 +81,10 @@ export function MaterialDetail({
   const tactileItems = [...new Set([...(m.texturaTactil ?? []), ...m.tactile])]
   const compatibles = m.materialesCompatibles ?? []
   const certs = m.certificaciones ?? []
+  const espaciosCond = m.espaciosCondicionados ?? []
+  const mantenimiento = m.notasMantenimiento ?? null
+  const alternativas = m.alternativas ?? []
+  const patologias = m.patologiasTipicas ?? []
 
   const physicalCells = [
     m.physical.density === '—' ? null : { k: 'Densidad', v: m.physical.density },
@@ -167,10 +171,10 @@ export function MaterialDetail({
             </div>
           </div>
 
-          {/* Section 02 — always rendered because thermal is always present */}
+          {/* Section 02 — Lectura sensorial + espacios */}
           <div className="detail-section-h">
             <span><span className="ix">02</span>&nbsp;&nbsp;Lectura sensorial</span>
-            <span>tacto · térmica · emoción</span>
+            <span>tacto · térmica · emoción · espacios</span>
           </div>
           <div className="spec-grid">
             {tactileItems.length > 0 && (
@@ -189,6 +193,12 @@ export function MaterialDetail({
                 <div className="v" style={{ fontSize: 13 }}>{m.texturaVisual}</div>
               </div>
             )}
+            {m.comportamientoLuz && (
+              <div className="cell">
+                <div className="k">Comportamiento con la luz</div>
+                <div className="v" style={{ fontSize: 13 }}>{m.comportamientoLuz}</div>
+              </div>
+            )}
             {m.emotions.length > 0 && (
               <div className="cell">
                 <div className="k">Emociones</div>
@@ -201,14 +211,26 @@ export function MaterialDetail({
                 <div className="vsmall">{m.spatial.map((s) => <span key={s} className="t">{s}</span>)}</div>
               </div>
             )}
+            {espaciosCond.length > 0 && (
+              <div className="cell">
+                <div className="k">Espacios condicionados</div>
+                <div className="vsmall">{espaciosCond.map((s) => <span key={s} className="t">{s}</span>)}</div>
+              </div>
+            )}
+            {m.espaciosNoRecomendados && (
+              <div className="cell">
+                <div className="k">No recomendado en</div>
+                <div className="v" style={{ fontSize: 13 }}>{m.espaciosNoRecomendados}</div>
+              </div>
+            )}
           </div>
 
-          {/* Section 03 — certificaciones y materiales compatibles */}
-          {(certs.length > 0 || compatibles.length > 0) && (
+          {/* Section 03 — compatibilidad */}
+          {(certs.length > 0 || compatibles.length > 0 || alternativas.length > 0) && (
             <>
               <div className="detail-section-h">
                 <span><span className="ix">03</span>&nbsp;&nbsp;Compatibilidad</span>
-                <span>certificaciones · materiales</span>
+                <span>certificaciones · materiales · alternativas</span>
               </div>
               <div className="spec-grid">
                 {certs.length > 0 && (
@@ -223,15 +245,51 @@ export function MaterialDetail({
                     <div className="vsmall">{compatibles.map((c) => <span key={c} className="t">{c}</span>)}</div>
                   </div>
                 )}
+                {alternativas.length > 0 && (
+                  <div className="cell">
+                    <div className="k">Alternativas</div>
+                    <div className="vsmall">{alternativas.map((a) => <span key={a} className="t">{a}</span>)}</div>
+                  </div>
+                )}
               </div>
             </>
           )}
 
-          {/* Section 04 — only if keywords exist */}
+          {/* Section 04 — mantenimiento, riesgos, patologías */}
+          {(mantenimiento || m.riesgosPrincipales || patologias.length > 0) && (
+            <>
+              <div className="detail-section-h">
+                <span><span className="ix">04</span>&nbsp;&nbsp;Mantenimiento</span>
+                <span>cuidado · riesgos · patologías</span>
+              </div>
+              <div className="spec-grid">
+                {mantenimiento && (
+                  <div className="cell" style={{ gridColumn: '1 / -1' }}>
+                    <div className="k">Notas de mantenimiento</div>
+                    <div className="v" style={{ fontSize: 13, lineHeight: 1.6 }}>{mantenimiento}</div>
+                  </div>
+                )}
+                {m.riesgosPrincipales && (
+                  <div className="cell">
+                    <div className="k">Riesgos principales</div>
+                    <div className="v" style={{ fontSize: 13, lineHeight: 1.6 }}>{m.riesgosPrincipales}</div>
+                  </div>
+                )}
+                {patologias.length > 0 && (
+                  <div className="cell">
+                    <div className="k">Patologías típicas</div>
+                    <div className="vsmall">{patologias.map((p) => <span key={p} className="t">{p}</span>)}</div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Section 05 — keywords */}
           {m.keywords.length > 0 && (
             <>
               <div className="detail-section-h">
-                <span><span className="ix">04</span>&nbsp;&nbsp;Vocabulario</span>
+                <span><span className="ix">05</span>&nbsp;&nbsp;Vocabulario</span>
                 <span>palabras clave</span>
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -244,11 +302,11 @@ export function MaterialDetail({
             </>
           )}
 
-          {/* Section 05 — only if related materials exist */}
+          {/* Section 06 — materiales afines */}
           {related.length > 0 && (
             <>
               <div className="detail-section-h">
-                <span><span className="ix">05</span>&nbsp;&nbsp;Materiales afines</span>
+                <span><span className="ix">06</span>&nbsp;&nbsp;Materiales afines</span>
                 <span>relación visual</span>
               </div>
               <div className="related">
@@ -265,6 +323,29 @@ export function MaterialDetail({
                     <div className="name">{r.name}</div>
                     <div className="cat">{r.category}</div>
                   </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Section 07 — fuentes */}
+          {(m.urlsFuente ?? []).length > 0 && (
+            <>
+              <div className="detail-section-h">
+                <span><span className="ix">07</span>&nbsp;&nbsp;Fuentes</span>
+                <span>referencias · documentación</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {(m.urlsFuente ?? []).map((url) => (
+                  <a
+                    key={url}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--accent)', textDecoration: 'underline', textUnderlineOffset: 3, wordBreak: 'break-all' }}
+                  >
+                    {url}
+                  </a>
                 ))}
               </div>
             </>
