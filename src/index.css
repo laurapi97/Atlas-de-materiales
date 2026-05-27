@@ -375,7 +375,7 @@ body::before {
 .compare-wrap .row { display: contents; }
 .compare-wrap .cell { padding: 16px 20px; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); background: var(--paper); }
 .compare-wrap .cell:last-child { border-right: 0; }
-.compare-wrap .cell.h { background: var(--paper-deep); font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.compare-wrap .cell.h { background: var(--paper-deep); font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink); text-align: center; display: flex; align-items: center; justify-content: center; }
 .compare-wrap .swatch-cell { padding: 0; aspect-ratio: 1; min-height: 200px; position: relative; }
 .compare-wrap .swatch-cell .x { position: absolute; top: 8px; right: 8px; background: var(--paper); border: 1px solid var(--rule); width: 26px; height: 26px; border-radius: 999px; font-size: 14px; }
 .compare-wrap .swatch-cell .x:hover { background: var(--ink); color: var(--paper); }
