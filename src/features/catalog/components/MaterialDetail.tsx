@@ -12,6 +12,16 @@ interface MaterialDetailProps {
   onToggleCompare: (id: string) => void
 }
 
+function ScoreBar({ value }: Readonly<{ value: number }>) {
+  return (
+    <div className="score-bar">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <i key={i} className={i <= value ? 'fill' : ''} />
+      ))}
+    </div>
+  )
+}
+
 function AiDescription({ m }: Readonly<{ m: Material }>) {
   const cacheKey = `ai_desc_${m.id}`
   const [text, setText] = useState<string | null>(() => localStorage.getItem(cacheKey))
@@ -152,10 +162,10 @@ export function MaterialDetail({
           {m.description && <p className="narrative">{m.description}</p>}
           <AiDescription key={m.id} m={m} />
 
-          {/* Section 01 — always rendered because durability is always present */}
+          {/* Section 01 — Ficha técnica */}
           <div className="detail-section-h">
             <span><span className="ix">01</span>&nbsp;&nbsp;Ficha técnica</span>
-            <span>propiedades</span>
+            <span>propiedades · puntajes</span>
           </div>
           <div className="spec-grid">
             {physicalCells.map(({ k, v }) => (
@@ -169,6 +179,23 @@ export function MaterialDetail({
               <div className="v" style={{ textTransform: 'capitalize' }}>{m.durability}</div>
               <DuraBar level={m.durability} />
             </div>
+            {([
+              { k: 'Humedad',     v: m.puntajeHumedad },
+              { k: 'Mantenimiento', v: m.puntajeMantenimiento },
+              { k: 'Calidez',     v: m.puntajeCalidez },
+              { k: 'Rigidez',     v: m.puntajeRigidez },
+              { k: 'Peso visual', v: m.puntajePesoVisual },
+              { k: 'Expresividad', v: m.puntajeExpresividad },
+              { k: 'Acústica',    v: m.puntajeAcustica },
+              { k: 'Sostenibilidad', v: m.puntajeSostenibilidad },
+              { k: 'Resistencia', v: m.puntajeResistenciaRelativa },
+            ] as const).filter(({ v }) => v != null).map(({ k, v }) => (
+              <div key={k} className="cell">
+                <div className="k">{k}</div>
+                <div className="v" style={{ fontSize: 13 }}>{v} / 5</div>
+                <ScoreBar value={v!} />
+              </div>
+            ))}
           </div>
 
           {/* Section 02 — Lectura sensorial + espacios */}
