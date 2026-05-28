@@ -9,15 +9,15 @@ interface SensoryMapProps {
   onOpen: (id: string) => void
 }
 
-function MapDot({ m, dim, cmp, onOpen }: Readonly<{ m: Material; dim: boolean; cmp: boolean; onOpen: () => void }>) {
+function MapDot({ m, dim, cmp, highlight, onOpen }: Readonly<{ m: Material; dim: boolean; cmp: boolean; highlight: boolean; onOpen: () => void }>) {
   const [imgErr, setImgErr] = useState(false)
-  const showImg = !!m.coverImage && !imgErr
+  const showImg = !!m.coverImage && !imgErr && (cmp || highlight)
   const p = materialPosition(m)
 
   return (
     <button
       type="button"
-      className={'map-dot' + (dim ? ' dim' : '') + (cmp ? ' compare-on' : '')}
+      className={'map-dot' + (dim ? ' dim' : '') + (cmp ? ' compare-on' : '') + (highlight ? ' highlight' : '')}
       style={{
         padding: 0,
         left: `${p.x * 100}%`,
@@ -46,6 +46,7 @@ function MapDot({ m, dim, cmp, onOpen }: Readonly<{ m: Material; dim: boolean; c
 export function SensoryMap({ materials, filters, compareSet, onOpen }: Readonly<SensoryMapProps>) {
   const filtered = applyFilters(materials, filters)
   const filteredIds = new Set(filtered.map((m) => m.id))
+  const filterActive = filtered.length < materials.length
   return (
     <div className="main">
       <div className="section-head">
@@ -77,6 +78,7 @@ export function SensoryMap({ materials, filters, compareSet, onOpen }: Readonly<
             m={m}
             dim={!filteredIds.has(m.id)}
             cmp={compareSet.has(m.id)}
+            highlight={filterActive && filteredIds.has(m.id)}
             onOpen={() => onOpen(m.id)}
           />
         ))}
