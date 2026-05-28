@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Material } from '@/types'
-import { DuraBar } from './DuraBar'
+
 import { supabase } from '@/services/supabase'
 
 interface MaterialDetailProps {
@@ -176,8 +176,7 @@ export function MaterialDetail({
             ))}
             <div className="cell">
               <div className="k">Durabilidad</div>
-              <div className="v" style={{ textTransform: 'capitalize' }}>{m.durability}</div>
-              <DuraBar level={m.durability} />
+              <ScoreBar value={m.puntajeDurabilidad ?? ({ baja: 2, media: 3, alta: 5 } as const)[m.durability]} />
             </div>
             {([
               { k: 'Humedad',     v: m.puntajeHumedad },
@@ -192,7 +191,6 @@ export function MaterialDetail({
             ] as const).filter(({ v }) => v != null).map(({ k, v }) => (
               <div key={k} className="cell">
                 <div className="k">{k}</div>
-                <div className="v" style={{ fontSize: 13 }}>{v} / 5</div>
                 <ScoreBar value={v!} />
               </div>
             ))}
@@ -212,7 +210,7 @@ export function MaterialDetail({
             )}
             <div className="cell">
               <div className="k">Térmica</div>
-              <div className="v" style={{ textTransform: 'capitalize' }}>{m.thermal}</div>
+              <div className="v" style={{ textTransform: 'capitalize', fontSize: 13 }}>{m.thermal}</div>
             </div>
             {m.texturaVisual && (
               <div className="cell">
