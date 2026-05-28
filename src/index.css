@@ -23,7 +23,7 @@
   --shadow-deep:  0 30px 80px -30px rgba(28,25,22,0.35);
   --serif:  "Instrument Serif", "Cormorant Garamond", "Times New Roman", serif;
   --sans:   "Geist", "Inter", system-ui, -apple-system, sans-serif;
-  --mono:   "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --mono:   "Century Gothic", "Futura", "Trebuchet MS", sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -346,6 +346,9 @@ body::before {
 .dura-bar i { flex: 1; height: 6px; background: var(--paper-deep); display: block; }
 .dura-bar i.fill { background: var(--ink); }
 .dura-bar i.fill.accent { background: var(--accent); }
+.score-bar { display: flex; gap: 3px; margin-top: 6px; }
+.score-bar i { width: 18px; height: 4px; background: var(--paper-deep); display: block; border-radius: 1px; }
+.score-bar i.fill { background: var(--ink); }
 
 .detail-section-h { font-family: var(--mono); font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; color: var(--muted); margin: 48px 0 18px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: baseline; }
 .detail-section-h .ix { color: var(--accent); }
@@ -367,12 +370,15 @@ body::before {
 .map-cross { position: absolute; background: var(--rule); }
 .map-cross.h { left: 0; right: 0; top: 50%; height: 1px; }
 .map-cross.v { top: 0; bottom: 0; left: 50%; width: 1px; }
-.map-dot { position: absolute; width: 64px; height: 64px; margin-left: -32px; margin-top: -32px; border: 1px solid var(--rule); cursor: pointer; transition: all .35s cubic-bezier(.2,.8,.2,1); outline: 1.5px solid transparent; outline-offset: 4px; }
-.map-dot:hover { transform: scale(1.15); outline-color: var(--ink); z-index: 10; }
+.map-dot { position: absolute; width: 10px; height: 10px; margin-left: -5px; margin-top: -5px; border-radius: 50%; border: 1px solid rgba(28,25,22,0.25); cursor: pointer; transition: all .35s cubic-bezier(.2,.8,.2,1); outline: 1.5px solid transparent; outline-offset: 3px; }
+.map-dot:hover { transform: scale(1.5); outline-color: var(--ink); z-index: 10; }
 .map-dot .lbl { position: absolute; top: 100%; left: 50%; transform: translate(-50%, 6px); font-family: var(--serif); font-size: 13px; white-space: nowrap; background: var(--paper); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--rule); opacity: 0; pointer-events: none; transition: opacity .25s ease; }
 .map-dot:hover .lbl { opacity: 1; }
-.map-dot.dim { opacity: 0.25; filter: grayscale(0.6); }
-.map-dot.compare-on { outline-color: var(--accent); outline-width: 2px; }
+.map-dot.dim { opacity: 0.2; }
+.map-dot.compare-on { width: 72px; height: 72px; margin-left: -36px; margin-top: -36px; border-radius: 0; border: 1px solid var(--rule); outline-color: var(--accent); outline-width: 2px; z-index: 5; }
+.map-dot.compare-on:hover { transform: scale(1.08); }
+.map-dot.highlight { width: 56px; height: 56px; margin-left: -28px; margin-top: -28px; border-radius: 0; border: 1px solid var(--rule); outline-color: var(--ink); outline-width: 1.5px; z-index: 4; }
+.map-dot.highlight:hover { transform: scale(1.1); }
 .map-legend { position: absolute; bottom: 24px; right: 24px; background: var(--paper); border: 1px solid var(--rule); padding: 12px 14px; display: grid; gap: 6px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; max-width: 220px; }
 .map-legend h5 { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; font-weight: 500; }
 
@@ -454,7 +460,8 @@ body::before {
 }
 
 /* ====== Footer ====== */
-.foot { border-top: 1px solid var(--rule); padding: 22px 36px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.foot { border-top: 1px solid var(--rule); padding: 22px 36px; display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.foot-watermark { font-family: var(--serif); font-style: italic; font-size: 13px; letter-spacing: 0.08em; text-transform: none; color: var(--muted-soft); }
 
 /* ====== Responsive ====== */
 @media (max-width: 880px) {
